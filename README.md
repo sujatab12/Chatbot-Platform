@@ -6,8 +6,8 @@
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/chatbot-platform.git
-cd chatbot-platform
+git clone https://github.com/sujatab12/Chatbot-Platform.git
+
 ```
 
 ### 2. Install Dependencies
