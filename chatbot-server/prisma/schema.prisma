@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  name          String?
+  password      String         @map("passwordHash")
+  createdAt     DateTime       @default(now())
+  refreshTokens RefreshToken[]
+  projects      Project[]
+  sessions      ChatSession[]
+}
+
+model RefreshToken {
+  id           String   @id @default(cuid())
+  tokenHash    String   @unique // hashed token (SHA256 or bcrypt)
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime
+  revoked      Boolean  @default(false)
+  replacedById String?  // id of new token after rotation
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  name        String
+  instructions String
+  model       String        @default("gpt-4o-mini")
+  isPublic    Boolean       @default(false)
+  shareUrl    String?       @unique
+  userId      String
+  user        User          @relation(fields: [userId], references: [id])
+  messages    Message[]
+  sessions    ChatSession[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model ChatSession {
+  id        String    @id @default(cuid())
+  title     String
+  project   Project   @relation(fields: [projectId], references: [id])
+  projectId String
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Message {
+  id        String       @id @default(cuid())
+  content   String
+  role      String       // "user" or "agent"
+  project   Project      @relation(fields: [projectId], references: [id])
+  projectId String
+  session   ChatSession? @relation(fields: [sessionId], references: [id])
+  sessionId String?
+  createdAt DateTime     @default(now())
+}

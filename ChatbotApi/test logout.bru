@@ -1,0 +1,25 @@
+meta {
+  name: test logout
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:4000/auth/logout
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "refreshToken": "<refresh-token>"
+  }
+}
+
+settings {
+  encodeUrl: false
+}
